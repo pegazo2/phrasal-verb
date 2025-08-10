@@ -2,449 +2,707 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Song Sentence Trainer with Practice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advanced Phrasal Verbs Trainer</title>
   <style>
-   body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #6b8dd6 0%, #a6c1ee 100%);
-  margin: 0;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  color: #2c3e50;
-}
-
-h2 {
-  margin-bottom: 1rem;
-  font-weight: 700;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-}
-
-textarea {
-  width: 100%;
-  max-width: 600px;
-  height: 150px;
-  padding: 1rem;
-  font-size: 16px;
-  border: none;
-  border-radius: 10px;
-  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
-  margin-bottom: 1.2rem;
-  resize: vertical;
-  transition: box-shadow 0.3s ease;
-}
-
-textarea:focus {
-  outline: none;
-  box-shadow: inset 2px 2px 8px #2980b9;
-}
-
-#sentenceCounter {
-  margin-top: 1rem;
-  font-size: 18px;
-  color: #34495e;
-  font-weight: 600;
-}
-
-input[type="text"] {
-  width: 100%;
-  max-width: 600px;
-  padding: 0.75rem 1rem;
-  font-size: 16px;
-  margin: 1.5rem 0;
-  border: none;
-  border-radius: 10px;
-  box-shadow: inset 2px 2px 6px rgba(0,0,0,0.1);
-  transition: box-shadow 0.3s ease;
-}
-
-input[type="text"]:focus {
-  outline: none;
-  box-shadow: inset 2px 2px 10px #3498db;
-}
-
-button {
-  padding: 0.6rem 1.5rem;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  background-color: #2980b9;
-  color: white;
-  margin: 0.3rem;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(41, 128, 185, 0.4);
-  transition: background-color 0.3s, box-shadow 0.3s;
-  font-weight: 600;
-  user-select: none;
-}
-
-button:hover {
-  background-color: #1c5d8b;
-  box-shadow: 0 6px 14px rgba(28, 93, 139, 0.6);
-}
-
-#output {
-  margin-top: 1rem;
-  max-width: 700px;
-  padding: 1.2rem;
-  background: #ffffffcc;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-height: 100px;
-  min-width: 300px;
-  justify-content: flex-start;
-  transition: background-color 0.3s ease;
-  white-space: pre-wrap;
-}
-
-.correct {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 8px 12px;
-  border-radius: 8px;
-  box-shadow: 1px 1px 8px #27ae6011;
-  font-size: 16px;
-}
-
-h3 {
-  margin-top: 2.5rem;
-  color: #2c3e50;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-}
-
-ul#savedSentences {
-  list-style: none;
-  padding: 10px 15px;
-  max-width: 600px;
-  margin-top: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border: 1.5px solid #ccc;
-  border-radius: 10px;
-  background: #fff9e6;
-  box-shadow: inset 1px 1px 5px rgba(243, 156, 18, 0.1);
-  max-height: 200px;
-  overflow-y: auto;
-  font-size: 15px;
-  color: #7f6000;
-}
-
-ul#savedSentences li {
-  background: #fdf6e3;
-  border: 1.5px solid #f0e2b6;
-  padding: 10px 14px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  word-break: break-word;
-}
-
-ul#savedSentences li button {
-  margin-left: 8px;
-  padding: 5px 10px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: none;
-  background-color: #2980b9;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  user-select: none;
-}
-
-ul#savedSentences li button:hover {
-  background-color: #1c5d8b;
-}
-
-ul#savedSentences li button.deleteBtn {
-  background-color: #e74c3c;
-}
-
-ul#savedSentences li button.deleteBtn:hover {
-  background-color: #b73128;
-}
-
+    :root {
+      --primary: #3498db;
+      --secondary: #2980b9;
+      --accent: #e74c3c;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --success: #2ecc71;
+      --warning: #f39c12;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      margin: 0;
+      padding: 20px;
+      color: var(--dark);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      overflow: hidden;
+      padding-bottom: 20px;
+    }
+    
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    
+    .mode-selector {
+      display: flex;
+      justify-content: center;
+      background: var(--light);
+      padding: 10px;
+    }
+    
+    .mode-btn {
+      padding: 10px 20px;
+      margin: 0 5px;
+      border: none;
+      border-radius: 5px;
+      background: white;
+      color: var(--dark);
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+    
+    .mode-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .content-area {
+      padding: 20px;
+    }
+    
+    /* Phrasal Verb Card */
+    .phrasal-card {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      margin: 20px 0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      border-left: 5px solid var(--primary);
+    }
+    
+    .phrasal-verb {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    .verb-meaning {
+      font-size: 18px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .verb-example {
+      font-style: italic;
+      padding: 15px;
+      background: var(--light);
+      border-radius: 8px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    .verb-example::before {
+      content: '"';
+      font-size: 40px;
+      color: var(--primary);
+      opacity: 0.2;
+      position: absolute;
+      top: -15px;
+      left: 5px;
+    }
+    
+    .verb-example::after {
+      content: '"';
+      font-size: 40px;
+      color: var(--primary);
+      opacity: 0.2;
+      position: absolute;
+      bottom: -25px;
+      right: 5px;
+    }
+    
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    button:hover {
+      background: var(--secondary);
+      transform: translateY(-2px);
+    }
+    
+    button.secondary {
+      background: var(--light);
+      color: var(--dark);
+    }
+    
+    button.accent {
+      background: var(--accent);
+    }
+    
+    input[type="text"] {
+      padding: 12px 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      width: 100%;
+      max-width: 500px;
+      margin: 10px 0;
+    }
+    
+    .feedback {
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    .correct {
+      background: rgba(46, 204, 113, 0.2);
+      color: var(--success);
+    }
+    
+    .incorrect {
+      background: rgba(231, 76, 60, 0.2);
+      color: var(--accent);
+    }
+    
+    .stats-container {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .stat-box {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      min-width: 120px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .progress-bar {
+      height: 10px;
+      background: #eee;
+      border-radius: 5px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+    
+    .progress {
+      height: 100%;
+      background: var(--success);
+      width: 0%;
+      transition: width 0.5s;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    .category-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    
+    .category-btn {
+      padding: 8px 15px;
+      background: white;
+      border: 2px solid var(--light);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .category-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    @media (max-width: 768px) {
+      .phrasal-verb {
+        font-size: 24px;
+      }
+      
+      button {
+        padding: 10px 15px;
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
-  <h2>🎵 Song Sentence Trainer with Practice</h2>
-  <p>Pega la letra de la canción (en inglés), con oraciones:</p>
-  <textarea id="lyrics" placeholder="Escribe o pega varias oraciones aquí..."></textarea><br />
-  <div>
-    <button onclick="startTraining()">Iniciar</button>
-    <button onclick="skipSentence()">Saltar oración</button>
-    <button onclick="revealSentence()">Revelar oración</button>
-    <button onclick="repeatSentenceNormal()">Repetir oración (normal)</button>
-    <button onclick="repeatSentenceSlow()">Repetir oración (lenta)</button>
-    <button onclick="repeatSentenceVerySlow()">Repetir oración (muy lenta)</button>
-    <button onclick="saveSentence()" disabled id="saveBtn">Guardar oración</button>
-    <button onclick="openPractice()">Practicar oraciones guardadas</button>
+  <div class="container">
+    <header>
+      <h1>Advanced Phrasal Verbs Trainer</h1>
+    </header>
+    
+    <div class="mode-selector">
+      <button class="mode-btn active" onclick="showMode('learn')">Learn</button>
+      <button class="mode-btn" onclick="showMode('practice')">Practice</button>
+      <button class="mode-btn" onclick="showMode('stats')">Statistics</button>
+    </div>
+    
+    <!-- Learn Mode -->
+    <div id="learn-mode" class="content-area">
+      <div class="category-selector">
+        <div class="category-btn active" data-category="all">All</div>
+        <div class="category-btn" data-category="common">Most Common</div>
+        <div class="category-btn" data-category="work">Work</div>
+        <div class="category-btn" data-category="travel">Travel</div>
+        <div class="category-btn" data-category="social">Social</div>
+      </div>
+      
+      <div class="phrasal-card">
+        <div class="phrasal-verb" id="current-verb">take off</div>
+        <div class="verb-meaning" id="current-meaning">to remove something (especially clothing) or to depart (airplane)</div>
+        <div class="verb-example" id="current-example">"Please take off your shoes before entering the house."</div>
+        
+        <div class="controls">
+          <button onclick="speakPhrasalVerb()"><span>🔊</span> Listen</button>
+          <button onclick="speakSlowly()"><span>🐢</span> Slow</button>
+          <button class="secondary" onclick="showTranslation()"><span>👀</span> Show Meaning</button>
+          <button class="secondary" onclick="showExample()"><span>💡</span> Show Example</button>
+          <button onclick="nextPhrasalVerb()"><span>➡️</span> Next</button>
+        </div>
+      </div>
+      
+      <div class="practice-box hidden" id="practice-box">
+        <h3>Practice Time!</h3>
+        <p>What does "<span id="practice-verb">take off</span>" mean?</p>
+        <input type="text" id="practice-answer" placeholder="Enter the meaning...">
+        <div class="controls">
+          <button onclick="checkAnswer()">Check Answer</button>
+        </div>
+        <div class="feedback hidden" id="practice-feedback"></div>
+      </div>
+    </div>
+    
+    <!-- Practice Mode -->
+    <div id="practice-mode" class="content-area hidden">
+      <h2>Test Your Knowledge</h2>
+      <div class="quiz-container" id="quiz-container">
+        <p>Complete the sentence:</p>
+        <p class="verb-example" id="quiz-sentence">"I need to _____ _____ my shoes before entering." (take off)</p>
+        <input type="text" id="quiz-answer" placeholder="Type the phrasal verb...">
+        <div class="controls">
+          <button onclick="checkQuiz()">Submit</button>
+          <button class="secondary" onclick="hintQuiz()">Hint</button>
+        </div>
+        <div class="feedback hidden" id="quiz-feedback"></div>
+      </div>
+      
+      <div class="stats-container">
+        <div class="stat-box">
+          <div class="stat-value" id="quiz-correct">0</div>
+          <div>Correct</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="quiz-wrong">0</div>
+          <div>Wrong</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="quiz-streak">0</div>
+          <div>Streak</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Statistics Mode -->
+    <div id="stats-mode" class="content-area hidden">
+      <h2>Your Progress</h2>
+      
+      <div class="stats-container">
+        <div class="stat-box">
+          <div class="stat-value" id="stats-learned">12</div>
+          <div>Learned</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="stats-practicing">8</div>
+          <div>Practicing</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="stats-mastered">4</div>
+          <div>Mastered</div>
+        </div>
+      </div>
+      
+      <h3>Progress</h3>
+      <div class="progress-bar">
+        <div class="progress" id="progress-bar" style="width: 35%;"></div>
+      </div>
+      
+      <h3>Recently Learned</h3>
+      <div class="learned-list" id="learned-list">
+        <!-- Filled by JavaScript -->
+      </div>
+    </div>
   </div>
 
-  <div id="sentenceCounter"></div>
+  <script>
+    // ===== Phrasal Verbs Database =====
+    const phrasalVerbs = [
+      // Common
+      { verb: "take off", translation: "quitarse/despegar", example: "The plane takes off at 3 PM.", category: "common" },
+      { verb: "put off", translation: "posponer", example: "Don't put off your homework.", category: "common" },
+      { verb: "look up", translation: "buscar (información)", example: "I'll look up the address online.", category: "common" },
+      { verb: "give up", translation: "rendirse", example: "Never give up on your dreams.", category: "common" },
+      { verb: "turn on", translation: "encender", example: "Can you turn on the lights?", category: "common" },
+      
+      // Work
+      { verb: "carry out", translation: "llevar a cabo", example: "We need to carry out more research.", category: "work" },
+      { verb: "draw up", translation: "redactar", example: "The lawyer will draw up the contract.", category: "work" },
+      { verb: "hand in", translation: "entregar", example: "Please hand in your reports by Friday.", category: "work" },
+      { verb: "take over", translation: "hacerse cargo", example: "She will take over as manager next month.", category: "work" },
+      
+      // Travel
+      { verb: "check in", translation: "registrarse", example: "We need to check in at the hotel.", category: "travel" },
+      { verb: "get on", translation: "subir (transporte)", example: "Quick, get on the bus!", category: "travel" },
+      { verb: "see off", translation: "despedir", example: "They came to see me off at the airport.", category: "travel" },
+      
+      // Social
+      { verb: "get along", translation: "llevarse bien", example: "Do you get along with your neighbors?", category: "social" },
+      { verb: "hang out", translation: "pasar el rato", example: "Let's hang out this weekend.", category: "social" },
+      { verb: "run into", translation: "encontrarse con", example: "I ran into an old friend yesterday.", category: "social" }
+    ];
 
-  <input
-    type="text"
-    id="userInput"
-    placeholder="Escribe la oración completa aquí"
-    oninput="checkSentence()"
-    autocomplete="off"
-    disabled
-  />
+    // ===== App State =====
+    let currentVerbIndex = 0;
+    let currentCategory = "all";
+    let userProgress = {};
+    let practiceStats = {
+      correct: 0,
+      wrong: 0,
+      streak: 0
+    };
 
-  <div id="output"></div>
-
-  <h3>📌 Oraciones guardadas para practicar:</h3>
-  <ul id="savedSentences"></ul>
-  <p id="savedCount" style="margin-top: 0.5rem;">Oraciones guardadas: 0</p>
-  <button onclick="downloadSentences()">⬇️ Descargar oraciones guardadas (.txt)</button>
-
-<script>
-  let sentences = [];
-  let current = 0;
-  let saved = [];
-
-  // Cargar oraciones guardadas al inicio
-  window.onload = function () {
-    const savedData = localStorage.getItem('savedSentences');
-    if (savedData) {
-      saved = JSON.parse(savedData);
-      renderSavedSentences();
-    }
-    updateSavedCount();
-  };
-
-  function startTraining() {
-    const lyrics = document.getElementById('lyrics').value.trim();
-    if (!lyrics) {
-      alert('Por favor pega la letra antes de iniciar.');
-      return;
-    }
-   // Dividir por saltos de línea (líneas no vacías)
-sentences = lyrics.split(/\n+/).map(s => s.trim()).filter(s => s.length > 0);
-    
-    if (!sentences || sentences.length === 0) {
-      alert('No se detectaron oraciones válidas.');
-      return;
-    }
-
-    sentences = sentences.map(s => s.trim());
-    current = 0;
-    document.getElementById('output').innerHTML = '';
-    document.getElementById('userInput').value = '';
-    document.getElementById('userInput').disabled = false;
-    document.getElementById('saveBtn').disabled = true;
-    document.getElementById('userInput').focus();
-    updateCounter();
-    speakSentence(sentences[current], 1);
-  }
-
-  function normalizeSentence(str) {
-  // Convertir a minúsculas
-  str = str.toLowerCase();
-
-  // Mantener solo letras, espacios y apóstrofes en contracciones/posesivos
-  str = str.replace(/[^a-z'\s]/g, '');
-
-  // Eliminar apóstrofes que NO estén entre letras
-  str = str.replace(/(^|[^a-z])'+|'+([^a-z]|$)/g, '$1$2');
-
-  // Reemplazar múltiples espacios por uno solo y quitar espacios al inicio y fin
-  str = str.replace(/\s+/g, ' ').trim();
-
-  return str;
-}
-
-  function updateCounter() {
-    const counter = document.getElementById('sentenceCounter');
-    if (current < sentences.length) {
-      counter.textContent = `Oración a escribir: ${current + 1} de ${sentences.length}`;
-    } else {
-      counter.textContent = '¡Has completado todas las oraciones! 🎉';
-      document.getElementById('saveBtn').disabled = true;
-      document.getElementById('userInput').disabled = true;
-    }
-  }
-
-  function checkSentence() {
-  if (current >= sentences.length) return;
-
-  const inputRaw = document.getElementById('userInput').value;
-  const targetRaw = sentences[current];
-
-  const input = normalizeSentence(inputRaw);
-  const target = normalizeSentence(targetRaw);
-
-  if (input === target) {
-    // Mostrar oración correcta
-    const output = document.getElementById('output');
-    const div = document.createElement('div');
-    div.className = 'correct';
-    div.textContent = sentences[current];
-    output.appendChild(div);
-
-    // Habilitar guardar oración
-    document.getElementById('saveBtn').disabled = false;
-
-    current++;
-    updateCounter();
-    document.getElementById('userInput').value = '';
-
-    if (current < sentences.length) {
-      speakSentence(sentences[current], 1);
-    } else {
-      alert('¡Completaste todas las oraciones! 🎉');
-      document.getElementById('userInput').disabled = true;
-      document.getElementById('saveBtn').disabled = true;
-    }
-  }
-}
-
-  function speakSentence(text, rate = 1) {
-    if (!('speechSynthesis' in window)) {
-      alert('Este navegador no soporta síntesis de voz.');
-      return;
-    }
-    speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = rate;
-    speechSynthesis.speak(utterance);
-  }
-
-  function skipSentence() {
-  if (current < sentences.length) {
-    // Avanzar la oración actual
-    current++;
-
-    updateCounter();
-    document.getElementById('userInput').value = '';
-    document.getElementById('output').innerHTML = '';
-    document.getElementById('saveBtn').disabled = true;
-
-    if (current < sentences.length) {
-      speakSentence(sentences[current], 1);
-      document.getElementById('userInput').disabled = false;
-      document.getElementById('userInput').focus();
-    } else {
-      alert('¡Has terminado todas las oraciones! 🎉');
-      document.getElementById('userInput').disabled = true;
-      document.getElementById('saveBtn').disabled = true;
-    }
-  }
-} // <--- Aquí cierra la función correctamente
- 
-  function revealSentence() {
-  if (current < sentences.length) {
-    const cleanSentence = normalizeSentence(sentences[current]);
-    alert('La oración es:\n' + cleanSentence);
-  } else {
-    alert('¡Ya completaste todas las oraciones!');
-  }
-}
-
-  function repeatSentenceNormal() {
-    if (current < sentences.length) {
-      speakSentence(sentences[current], 1);
-    }
-  }
-
-  function repeatSentenceSlow() {
-    if (current < sentences.length) {
-      speakSentence(sentences[current], 0.6);
-    }
-  }
-
-  function repeatSentenceVerySlow() {
-  if (current < sentences.length) {
-    speakSentence(sentences[current], 0.3); // velocidad muy lenta
-  }
-}
-
-  function saveSentence() {
-    // Guardamos la oración que acabamos de completar (la anterior a current)
-    const indexToSave = current - 1;
-    if (indexToSave < 0 || indexToSave >= sentences.length) return;
-
-    const sentenceToSave = sentences[indexToSave];
-    if (!saved.includes(sentenceToSave)) {
-      saved.push(sentenceToSave);
-      localStorage.setItem('savedSentences', JSON.stringify(saved));
-      renderSavedSentences();
-      updateSavedCount();
-      alert('Oración guardada para practicar.');
-    } else {
-      alert('Esta oración ya está guardada.');
-    }
-
-    document.getElementById('saveBtn').disabled = true;
-  }
-
-  function renderSavedSentences() {
-    const list = document.getElementById('savedSentences');
-    list.innerHTML = '';
-    saved.forEach((sentence, index) => {
-      const li = document.createElement('li');
-      li.textContent = sentence;
-
-      // Botón escuchar
-      const btnSpeak = document.createElement('button');
-      btnSpeak.textContent = '🔊';
-      btnSpeak.title = 'Escuchar oración';
-      btnSpeak.onclick = () => speakSentence(sentence, 1);
-
-      // Botón eliminar
-      const btnDelete = document.createElement('button');
-      btnDelete.textContent = '❌';
-      btnDelete.title = 'Eliminar oración';
-      btnDelete.className = 'deleteBtn';
-      btnDelete.onclick = () => deleteSavedSentence(index);
-
-      li.appendChild(btnSpeak);
-      li.appendChild(btnDelete);
-      list.appendChild(li);
+    // ===== Initialize App =====
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load user progress from localStorage
+      const savedProgress = localStorage.getItem('phrasalVerbProgress');
+      if (savedProgress) {
+        userProgress = JSON.parse(savedProgress);
+      } else {
+        // Initialize progress
+        phrasalVerbs.forEach(verb => {
+          userProgress[verb.verb] = {
+            views: 0,
+            correct: 0,
+            wrong: 0,
+            lastPracticed: null,
+            mastered: false
+          };
+        });
+      }
+      
+      // Set up category buttons
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          currentCategory = this.dataset.category;
+          currentVerbIndex = 0;
+          displayCurrentPhrasalVerb();
+        });
+      });
+      
+      // Display first verb
+      displayCurrentPhrasalVerb();
+      updateStats();
     });
-  }
 
-  function deleteSavedSentence(index) {
-    if (confirm(`¿Eliminar esta oración guardada?`)) {
-      saved.splice(index, 1);
-      localStorage.setItem('savedSentences', JSON.stringify(saved));
-      renderSavedSentences();
-      updateSavedCount();
+    // ===== Main Functions =====
+    function displayCurrentPhrasalVerb() {
+      const verbs = getFilteredVerbs();
+      if (verbs.length === 0) {
+        document.getElementById('current-verb').textContent = "No verbs in this category";
+        return;
+      }
+      
+      if (currentVerbIndex >= verbs.length) {
+        currentVerbIndex = 0;
+      }
+      
+      const currentVerb = verbs[currentVerbIndex];
+      document.getElementById('current-verb').textContent = currentVerb.verb;
+      document.getElementById('current-meaning').textContent = currentVerb.translation;
+      document.getElementById('current-example').textContent = currentVerb.example;
+      
+      // Hide meaning and example initially
+      document.getElementById('current-meaning').style.visibility = 'hidden';
+      document.getElementById('current-example').style.visibility = 'hidden';
+      
+      // Update progress
+      userProgress[currentVerb.verb].views++;
+      saveProgress();
     }
-  }
 
-  function updateSavedCount() {
-  document.getElementById('savedCount').textContent = `Oraciones guardadas: ${saved.length}`;
-}
+    function getFilteredVerbs() {
+      if (currentCategory === "all") return phrasalVerbs;
+      return phrasalVerbs.filter(verb => verb.category === currentCategory);
+    }
 
-function downloadSentences() {
-  if (saved.length === 0) {
-    alert('No hay oraciones guardadas para descargar.');
-    return;
-  }
-  const text = saved.join('\n\n');
-  const blob = new Blob([text], { type: 'text/plain' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'oraciones_guardadas.txt';
-  link.click();
-}
+    function nextPhrasalVerb() {
+      const verbs = getFilteredVerbs();
+      currentVerbIndex = (currentVerbIndex + 1) % verbs.length;
+      displayCurrentPhrasalVerb();
+      
+      // Hide practice box
+      document.getElementById('practice-box').classList.add('hidden');
+    }
 
-function openPractice() {
-  window.open('practice.html', '_blank');
-}
+    function speakPhrasalVerb() {
+      const verbs = getFilteredVerbs();
+      const currentVerb = verbs[currentVerbIndex];
+      speakText(currentVerb.verb);
+    }
 
-</script>
+    function speakSlowly() {
+      const verbs = getFilteredVerbs();
+      const currentVerb = verbs[currentVerbIndex];
+      speakText(currentVerb.verb, 0.7);
+    }
+
+    function speakText(text, rate = 1) {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = rate;
+        speechSynthesis.cancel();
+        speechSynthesis.speak(utterance);
+      } else {
+        alert("Text-to-speech not supported in your browser");
+      }
+    }
+
+    function showTranslation() {
+      document.getElementById('current-meaning').style.visibility = 'visible';
+    }
+
+    function showExample() {
+      document.getElementById('current-example').style.visibility = 'visible';
+    }
+
+    function startPractice() {
+      document.getElementById('practice-box').classList.remove('hidden');
+      const verbs = getFilteredVerbs();
+      const currentVerb = verbs[currentVerbIndex];
+      document.getElementById('practice-verb').textContent = currentVerb.verb;
+      document.getElementById('practice-answer').value = '';
+      document.getElementById('practice-feedback').classList.add('hidden');
+    }
+
+    function checkAnswer() {
+      const verbs = getFilteredVerbs();
+      const currentVerb = verbs[currentVerbIndex];
+      const userAnswer = document.getElementById('practice-answer').value.trim().toLowerCase();
+      const correctAnswer = currentVerb.translation.toLowerCase();
+      
+      const feedback = document.getElementById('practice-feedback');
+      feedback.classList.remove('hidden');
+      
+      if (userAnswer === correctAnswer) {
+        feedback.textContent = "✅ Correct! Well done!";
+        feedback.className = "feedback correct";
+        userProgress[currentVerb.verb].correct++;
+        practiceStats.correct++;
+        practiceStats.streak++;
+      } else {
+        feedback.textContent = `❌ Incorrect. The correct meaning is: "${currentVerb.translation}"`;
+        feedback.className = "feedback incorrect";
+        userProgress[currentVerb.verb].wrong++;
+        practiceStats.wrong++;
+        practiceStats.streak = 0;
+      }
+      
+      saveProgress();
+      updateStats();
+    }
+
+    // ===== Quiz Functions =====
+    function startQuiz() {
+      const verbs = getFilteredVerbs();
+      const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
+      const example = randomVerb.example;
+      
+      // Replace the phrasal verb with blanks
+      const blankedExample = example.replace(randomVerb.verb, "_____ _____");
+      
+      document.getElementById('quiz-sentence').textContent = blankedExample + ` (${randomVerb.translation})`;
+      document.getElementById('quiz-answer').value = '';
+      document.getElementById('quiz-feedback').classList.add('hidden');
+      document.getElementById('quiz-answer').focus();
+    }
+
+    function checkQuiz() {
+      const verbs = getFilteredVerbs();
+      const answer = document.getElementById('quiz-answer').value.trim().toLowerCase();
+      const currentExample = document.getElementById('quiz-sentence').textContent;
+      
+      // Find the verb that matches the example
+      const currentVerb = verbs.find(v => currentExample.includes(v.example.replace(v.verb, "_____ _____")));
+      
+      if (!currentVerb) {
+        alert("Error: Couldn't find current verb");
+        return;
+      }
+      
+      const feedback = document.getElementById('quiz-feedback');
+      feedback.classList.remove('hidden');
+      
+      if (answer === currentVerb.verb.toLowerCase()) {
+        feedback.textContent = "✅ Correct! Excellent!";
+        feedback.className = "feedback correct";
+        userProgress[currentVerb.verb].correct++;
+        practiceStats.correct++;
+        practiceStats.streak++;
+      } else {
+        feedback.textContent = `❌ Incorrect. The correct phrasal verb is: "${currentVerb.verb}"`;
+        feedback.className = "feedback incorrect";
+        userProgress[currentVerb.verb].wrong++;
+        practiceStats.wrong++;
+        practiceStats.streak = 0;
+      }
+      
+      saveProgress();
+      updateStats();
+      
+      // Start new quiz after delay
+      setTimeout(startQuiz, 1500);
+    }
+
+    function hintQuiz() {
+      const currentExample = document.getElementById('quiz-sentence').textContent;
+      const verbs = getFilteredVerbs();
+      const currentVerb = verbs.find(v => currentExample.includes(v.example.replace(v.verb, "_____ _____"))?.verb;
+      
+      if (currentVerb) {
+        const firstWord = currentVerb.split(' ')[0];
+        document.getElementById('quiz-answer').value = firstWord + " ";
+        document.getElementById('quiz-answer').focus();
+      }
+    }
+
+    // ===== Progress Tracking =====
+    function saveProgress() {
+      localStorage.setItem('phrasalVerbProgress', JSON.stringify(userProgress));
+    }
+
+    function updateStats() {
+      // Update practice stats
+      document.getElementById('quiz-correct').textContent = practiceStats.correct;
+      document.getElementById('quiz-wrong').textContent = practiceStats.wrong;
+      document.getElementById('quiz-streak').textContent = practiceStats.streak;
+      
+      // Update overall stats
+      const totalVerbs = phrasalVerbs.length;
+      const learnedVerbs = Object.values(userProgress).filter(v => v.views > 0).length;
+      const practicingVerbs = Object.values(userProgress).filter(v => v.correct > 0).length;
+      const masteredVerbs = Object.values(userProgress).filter(v => v.correct >= 3).length;
+      
+      document.getElementById('stats-learned').textContent = learnedVerbs;
+      document.getElementById('stats-practicing').textContent = practicingVerbs;
+      document.getElementById('stats-mastered').textContent = masteredVerbs;
+      
+      // Update progress bar
+      const progressPercent = Math.round((masteredVerbs / totalVerbs) * 100);
+      document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+      
+      // Update recently learned list
+      updateLearnedList();
+    }
+
+    function updateLearnedList() {
+      const learnedList = document.getElementById('learned-list');
+      learnedList.innerHTML = '';
+      
+      // Get verbs sorted by last practiced
+      const sortedVerbs = [...phrasalVerbs].sort((a, b) => {
+        const dateA = userProgress[a.verb]?.lastPracticed || 0;
+        const dateB = userProgress[b.verb]?.lastPracticed || 0;
+        return dateB - dateA;
+      });
+      
+      // Show top 5 recently practiced
+      const recentVerbs = sortedVerbs.slice(0, 5);
+      recentVerbs.forEach(verb => {
+        const progress = userProgress[verb.verb];
+        if (progress.views > 0) {
+          const item = document.createElement('div');
+          item.className = 'phrasal-card';
+          item.innerHTML = `
+            <strong>${verb.verb}</strong>: ${verb.translation}
+            <div style="margin-top: 10px; font-size: 14px;">
+              <span style="color: var(--success);">✓ ${progress.correct}</span> | 
+              <span style="color: var(--accent);">✗ ${progress.wrong}</span>
+            </div>
+          `;
+          learnedList.appendChild(item);
+        }
+      });
+    }
+
+    // ===== Mode Switching =====
+    function showMode(mode) {
+      // Update active button
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.toLowerCase().includes(mode)) {
+          btn.classList.add('active');
+        }
+      });
+      
+      // Hide all content areas
+      document.querySelectorAll('.content-area').forEach(area => {
+        area.classList.add('hidden');
+      });
+      
+      // Show selected mode
+      document.getElementById(`${mode}-mode`).classList.remove('hidden');
+      
+      // Initialize mode if needed
+      if (mode === 'practice') {
+        startQuiz();
+      } else if (mode === 'stats') {
+        updateStats();
+      }
+    }
+  </script>
 </body>
 </html>
