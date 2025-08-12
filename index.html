@@ -45,23 +45,66 @@
   let sentences = [];
   let current = 0;
   let saved = [];
-  let englishVoice = null; // 🔹 Voz en inglés seleccionada
+  let englishVoice = null;
+  let voicesLoaded = false;
 
-  // Cargar voces cuando estén disponibles
-  speechSynthesis.onvoiceschanged = () => {
+  // Función para cargar voces y buscar voz en inglés
+  function loadEnglishVoice() {
     const voices = speechSynthesis.getVoices();
-    englishVoice = voices.find(v => v.lang === 'en-US' || v.lang.startsWith('en'));
+    if (voices.length > 0) {
+      englishVoice = voices.find(v => v.lang === 'en-US' || v.lang.startsWith('en'));
+      voicesLoaded = true;
+    }
+  }
+
+  // Escuchar evento de cambio de voces (Chrome y otros)
+  speechSynthesis.onvoiceschanged = () => {
+    loadEnglishVoice();
   };
 
-  // Cargar oraciones guardadas al inicio
-  window.onload = function () {
+  // Cargar oraciones guardadas y cargar voces al cargar la página
+  window.addEventListener('load', () => {
+    loadEnglishVoice();
     const savedData = localStorage.getItem('savedSentences');
     if (savedData) {
       saved = JSON.parse(savedData);
       renderSavedSentences();
     }
     updateSavedCount();
-  };
+  });
+
+  async function speakSentence(text, rate = 1) {
+    if (!('speechSynthesis' in window)) {
+      alert('Este navegador no soporta síntesis de voz.');
+      return;
+    }
+
+    // Esperar hasta que las voces estén cargadas (máximo 1.5 segundos)
+    if (!voicesLoaded) {
+      await new Promise(resolve => {
+        let waited = 0;
+        const interval = setInterval(() => {
+          if (voicesLoaded || waited > 1500) {
+            clearInterval(interval);
+            resolve();
+          }
+          waited += 100;
+        }, 100);
+      });
+    }
+
+    speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = rate;
+
+    if (englishVoice) {
+      utterance.voice = englishVoice;
+    }
+
+    speechSynthesis.speak(utterance);
+  }
 
   function startTraining() {
     const lyrics = document.getElementById('lyrics').value.trim();
@@ -81,6 +124,8 @@
     document.getElementById('saveBtn').disabled = true;
     document.getElementById('userInput').focus();
     updateCounter();
+
+    // Usar async para esperar voz y que se escuche bien la primera oración
     speakSentence(sentences[current], 1);
   }
 
@@ -125,21 +170,6 @@
         document.getElementById('saveBtn').disabled = true;
       }
     }
-  }
-
-  function speakSentence(text, rate = 1) {
-    if (!('speechSynthesis' in window)) {
-      alert('Este navegador no soporta síntesis de voz.');
-      return;
-    }
-    speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = rate;
-    if (englishVoice) {
-      utterance.voice = englishVoice;
-    }
-    speechSynthesis.speak(utterance);
   }
 
   function skipSentence() {
