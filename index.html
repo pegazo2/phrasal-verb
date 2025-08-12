@@ -6,6 +6,24 @@
   <title>Song Sentence Trainer with Practice</title>
   <style>
     /* --- Todo tu CSS original aquí sin cambios --- */
+    #phrasalVerbsInfo {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f0f8ff;
+      border: 1px solid #aaccee;
+      border-radius: 5px;
+    }
+    #phrasalVerbsInfo h4 {
+      margin: 0 0 0.5rem 0;
+    }
+    .phrasal-verb-item {
+      margin-bottom: 0.7rem;
+    }
+    .listen-btn {
+      margin-left: 0.5rem;
+      padding: 2px 6px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -36,6 +54,9 @@
 
   <div id="output"></div>
 
+  <!-- Aquí mostrar info de phrasal verbs detectados -->
+  <div id="phrasalVerbsInfo"></div>
+
   <h3>📌 Oraciones guardadas para practicar:</h3>
   <ul id="savedSentences"></ul>
   <p id="savedCount" style="margin-top: 0.5rem;">Oraciones guardadas: 0</p>
@@ -49,7 +70,52 @@
   let englishVoice = null;
   let voicesLoaded = false;
 
-  // Función para cargar voces y buscar voz en inglés
+  // Diccionario con phrasal verbs, ejemplos y traducción
+  const phrasalVerbsData = {
+    "get up": {
+      example: "I get up early every day.",
+      meaning: "Me levanto temprano todos los días."
+    },
+    "put on": {
+      example: "She put on her jacket before leaving.",
+      meaning: "Ella se puso la chaqueta antes de salir."
+    },
+    "take off": {
+      example: "The plane takes off at 9 PM.",
+      meaning: "El avión despega a las 9 de la noche."
+    },
+    "turn on": {
+      example: "Please turn on the lights.",
+      meaning: "Por favor, enciende las luces."
+    },
+    "turn off": {
+      example: "Turn off the TV when you finish.",
+      meaning: "Apaga la televisión cuando termines."
+    },
+    "look for": {
+      example: "I'm looking for my keys.",
+      meaning: "Estoy buscando mis llaves."
+    },
+    "give up": {
+      example: "Don't give up on your dreams.",
+      meaning: "No te rindas con tus sueños."
+    },
+    "bring up": {
+      example: "She brought up an interesting topic.",
+      meaning: "Ella sacó un tema interesante."
+    },
+    "call off": {
+      example: "They called off the meeting.",
+      meaning: "Cancelaron la reunión."
+    },
+    "come back": {
+      example: "He will come back tomorrow.",
+      meaning: "Él volverá mañana."
+    }
+    // Puedes agregar más phrasal verbs aquí...
+  };
+
+  // Cargar voces y buscar voz en inglés
   function loadEnglishVoice() {
     const voices = speechSynthesis.getVoices();
     if (voices.length > 0) {
@@ -58,12 +124,10 @@
     }
   }
 
-  // Escuchar evento de cambio de voces (Chrome y otros)
   speechSynthesis.onvoiceschanged = () => {
     loadEnglishVoice();
   };
 
-  // Cargar oraciones guardadas y cargar voces al cargar la página
   window.addEventListener('load', () => {
     loadEnglishVoice();
     const savedData = localStorage.getItem('savedSentences');
@@ -81,7 +145,6 @@
     }
 
     loadEnglishVoice();
-
     speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
@@ -93,6 +156,69 @@
     }
 
     speechSynthesis.speak(utterance);
+  }
+
+  // Detectar phrasal verbs en un texto (devuelve array con ellos)
+  function detectPhrasalVerbs(text) {
+    const found = [];
+    const lowerText = text.toLowerCase();
+    for (const phrasal in phrasalVerbsData) {
+      if (lowerText.includes(phrasal)) {
+        found.push(phrasal);
+      }
+    }
+    return found;
+  }
+
+  // Mostrar en pantalla la info y botones de escucha de phrasal verbs detectados
+  function showPhrasalVerbsInfo(phrasals) {
+    const container = document.getElementById('phrasalVerbsInfo');
+    container.innerHTML = ''; // limpiar
+
+    if (phrasals.length === 0) return;
+
+    const title = document.createElement('h4');
+    title.textContent = 'Phrasal Verbs detectados:';
+    container.appendChild(title);
+
+    phrasals.forEach(pv => {
+      const data = phrasalVerbsData[pv];
+      if (!data) return;
+
+      const div = document.createElement('div');
+      div.className = 'phrasal-verb-item';
+
+      const textSpan = document.createElement('span');
+      textSpan.innerHTML = `<b>${pv}</b>: ${data.example} — <i>${data.meaning}</i>`;
+
+      const btnListen = document.createElement('button');
+      btnListen.textContent = 'Listen';
+      btnListen.className = 'listen-btn';
+      btnListen.onclick = () => speakSentence(data.example, 1);
+
+      div.appendChild(textSpan);
+      div.appendChild(btnListen);
+      container.appendChild(div);
+    });
+  }
+
+  // Lee phrasal verbs detectados y luego la oración completa
+  async function speakPhrasalVerbsAndSentence(sentence) {
+    const phrasals = detectPhrasalVerbs(sentence);
+    showPhrasalVerbsInfo(phrasals);
+
+    if (phrasals.length > 0) {
+      const phrasalsText = "Phrasal verbs found: " + phrasals.join(", ") + ".";
+      await new Promise(resolve => {
+        const utterance = new SpeechSynthesisUtterance(phrasalsText);
+        utterance.lang = 'en-US';
+        utterance.voice = englishVoice;
+        utterance.rate = 1;
+        utterance.onend = resolve;
+        speechSynthesis.speak(utterance);
+      });
+    }
+    speakSentence(sentence, 1);
   }
 
   function testSpeak() {
@@ -118,7 +244,7 @@
     document.getElementById('userInput').focus();
     updateCounter();
 
-    speakSentence(sentences[current], 1);
+    speakPhrasalVerbsAndSentence(sentences[current]);
   }
 
   function normalizeSentence(str) {
@@ -137,6 +263,7 @@
       counter.textContent = '¡Has completado todas las oraciones! 🎉';
       document.getElementById('saveBtn').disabled = true;
       document.getElementById('userInput').disabled = true;
+      document.getElementById('phrasalVerbsInfo').innerHTML = ''; // limpiar al final
     }
   }
 
@@ -155,11 +282,12 @@
       updateCounter();
       document.getElementById('userInput').value = '';
       if (current < sentences.length) {
-        speakSentence(sentences[current], 1);
+        speakPhrasalVerbsAndSentence(sentences[current]);
       } else {
         alert('¡Completaste todas las oraciones! 🎉');
         document.getElementById('userInput').disabled = true;
         document.getElementById('saveBtn').disabled = true;
+        document.getElementById('phrasalVerbsInfo').innerHTML = ''; // limpiar al final
       }
     }
   }
@@ -172,13 +300,14 @@
       document.getElementById('output').innerHTML = '';
       document.getElementById('saveBtn').disabled = true;
       if (current < sentences.length) {
-        speakSentence(sentences[current], 1);
+        speakPhrasalVerbsAndSentence(sentences[current]);
         document.getElementById('userInput').disabled = false;
         document.getElementById('userInput').focus();
       } else {
         alert('¡Has terminado todas las oraciones! 🎉');
         document.getElementById('userInput').disabled = true;
         document.getElementById('saveBtn').disabled = true;
+        document.getElementById('phrasalVerbsInfo').innerHTML = ''; // limpiar al final
       }
     }
   }
@@ -192,7 +321,7 @@
   }
 
   function repeatSentenceNormal() {
-    if (current < sentences.length) speakSentence(sentences[current], 1);
+    if (current < sentences.length) speakPhrasalVerbsAndSentence(sentences[current]);
   }
 
   function repeatSentenceSlow() {
