@@ -74,24 +74,25 @@
   });
 
   async function speakSentence(text, rate = 1) {
-    if (!('speechSynthesis' in window)) {
-      alert('Este navegador no soporta síntesis de voz.');
-      return;
-    }
+  if (!('speechSynthesis' in window)) {
+    alert('Este navegador no soporta síntesis de voz.');
+    return;
+  }
 
-    // Esperar hasta que las voces estén cargadas (máximo 1.5 segundos)
-    if (!voicesLoaded) {
-      await new Promise(resolve => {
-        let waited = 0;
-        const interval = setInterval(() => {
-          if (voicesLoaded || waited > 1500) {
-            clearInterval(interval);
-            resolve();
-          }
-          waited += 100;
-        }, 100);
-      });
-    }
+  loadEnglishVoice();
+
+  speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  utterance.rate = rate;
+
+  if (englishVoice) {
+    utterance.voice = englishVoice;
+  }
+
+  speechSynthesis.speak(utterance);
+}
 
     speechSynthesis.cancel();
 
