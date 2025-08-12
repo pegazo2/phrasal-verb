@@ -21,6 +21,7 @@
     <button onclick="repeatSentenceVerySlow()">Repetir oración (muy lenta)</button>
     <button onclick="saveSentence()" disabled id="saveBtn">Guardar oración</button>
     <button onclick="openPractice()">Practicar oraciones guardadas</button>
+    <button onclick="testSpeak()">Probar voz en la página</button>
   </div>
 
   <div id="sentenceCounter"></div>
@@ -40,7 +41,6 @@
   <ul id="savedSentences"></ul>
   <p id="savedCount" style="margin-top: 0.5rem;">Oraciones guardadas: 0</p>
   <button onclick="downloadSentences()">⬇️ Descargar oraciones guardadas (.txt)</button>
-  <button onclick="testSpeak()">Probar voz en la página</button>
 
 <script>
   let sentences = [];
@@ -75,25 +75,10 @@
   });
 
   async function speakSentence(text, rate = 1) {
-  if (!('speechSynthesis' in window)) {
-    alert('Este navegador no soporta síntesis de voz.');
-    return;
-  }
-
-  loadEnglishVoice();
-
-  speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'en-US';
-  utterance.rate = rate;
-
-  if (englishVoice) {
-    utterance.voice = englishVoice;
-  }
-
-  speechSynthesis.speak(utterance);
-}
+    if (!('speechSynthesis' in window)) {
+      alert('Este navegador no soporta síntesis de voz.');
+      return;
+    }
 
     speechSynthesis.cancel();
 
@@ -109,8 +94,8 @@
   }
 
   function testSpeak() {
-  speakSentence("Testing phrasal verbs like get up, put on, and take off.", 1);
-}
+    speakSentence("Testing phrasal verbs like get up, put on, and take off.", 1);
+  }
 
   function startTraining() {
     const lyrics = document.getElementById('lyrics').value.trim();
@@ -131,7 +116,6 @@
     document.getElementById('userInput').focus();
     updateCounter();
 
-    // Usar async para esperar voz y que se escuche bien la primera oración
     speakSentence(sentences[current], 1);
   }
 
