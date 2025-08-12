@@ -40,6 +40,7 @@
   <ul id="savedSentences"></ul>
   <p id="savedCount" style="margin-top: 0.5rem;">Oraciones guardadas: 0</p>
   <button onclick="downloadSentences()">⬇️ Descargar oraciones guardadas (.txt)</button>
+  <button onclick="testSpeak()">Probar voz en la página</button>
 
 <script>
   let sentences = [];
@@ -106,6 +107,10 @@
 
     speechSynthesis.speak(utterance);
   }
+
+  function testSpeak() {
+  speakSentence("Testing phrasal verbs like get up, put on, and take off.", 1);
+}
 
   function startTraining() {
     const lyrics = document.getElementById('lyrics').value.trim();
