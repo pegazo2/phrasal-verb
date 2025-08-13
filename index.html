@@ -3,546 +3,82 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Song Sentence Trainer with Practice</title>
+  <title>Phrasal Verb Trainer</title>
   <style>
-    /* --- Todo tu CSS original aquí sin cambios --- */
-    #phrasalVerbsInfo {
-      margin-top: 1rem;
-      padding: 1rem;
-      background: #f0f8ff;
-      border: 1px solid #aaccee;
-      border-radius: 5px;
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
     }
-    #phrasalVerbsInfo h4 {
-      margin: 0 0 0.5rem 0;
+    .phrasal-container {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
-    .phrasal-verb-item {
-      margin-bottom: 0.7rem;
+    .phrasal {
+      font-weight: bold;
+      font-size: 18px;
     }
-    .listen-btn {
-      margin-left: 0.5rem;
-      padding: 2px 6px;
+    .meaning {
+      color: #555;
+      margin: 5px 0;
+    }
+    button {
+      margin-top: 8px;
+      padding: 6px 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
       cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
     }
   </style>
 </head>
 <body>
-  <h2>🎵 Song Sentence Trainer with Practice</h2>
-  <p>Pega la letra de la canción (en inglés), con oraciones:</p>
-  <textarea id="lyrics" placeholder="Escribe o pega varias oraciones aquí..."></textarea><br />
-  <div>
-    <button onclick="startTraining()">Iniciar</button>
-    <button onclick="skipSentence()">Saltar oración</button>
-    <button onclick="revealSentence()">Revelar oración</button>
-    <button onclick="repeatSentenceNormal()">Repetir oración (normal)</button>
-    <button onclick="repeatSentenceSlow()">Repetir oración (lenta)</button>
-    <button onclick="repeatSentenceVerySlow()">Repetir oración (muy lenta)</button>
-    <button onclick="saveSentence()" disabled id="saveBtn">Guardar oración</button>
-    <button onclick="openPractice()">Practicar oraciones guardadas</button>
-  </div>
 
-  <div id="sentenceCounter"></div>
+  <h1>Phrasal Verb Trainer</h1>
 
-  <input
-    type="text"
-    id="userInput"
-    placeholder="Escribe la oración completa aquí"
-    oninput="checkSentence()"
-    autocomplete="off"
-    disabled
-  />
+  <div id="phrasal-list"></div>
 
-  <div id="output"></div>
+  <script>
+    const phrasalVerbs = [
+      { verb: "break down", meaning: "stop functioning", example: "My car broke down on the way to work." },
+      { verb: "call off", meaning: "cancel", example: "They called off the meeting because of the weather." },
+      { verb: "carry on", meaning: "continue", example: "She carried on working despite feeling sick." }
+    ];
 
-  <!-- Aquí mostrar info de phrasal verbs detectados -->
-  <div id="phrasalVerbsInfo"></div>
+    function renderPhrasals() {
+      const container = document.getElementById("phrasal-list");
+      container.innerHTML = "";
 
-  <h3>📌 Oraciones guardadas para practicar:</h3>
-  <ul id="savedSentences"></ul>
-  <p id="savedCount" style="margin-top: 0.5rem;">Oraciones guardadas: 0</p>
-  <button onclick="downloadSentences()">⬇️ Descargar oraciones guardadas (.txt)</button>
-  <button onclick="testSpeak()">Probar voz en la página</button>
+      phrasalVerbs.forEach(item => {
+        const div = document.createElement("div");
+        div.classList.add("phrasal-container");
 
-<script>
-  let sentences = [];
-  let current = 0;
-  let saved = [];
-  let englishVoice = null;
-  let voicesLoaded = false;
-
-  const phrasalVerbsData = {
-    "get up": {
-      example: "I get up early every day.",
-      meaning: "Me levanto temprano todos los días."
-    },
-    "put on": {
-      example: "She put on her jacket before leaving.",
-      meaning: "Ella se puso la chaqueta antes de salir."
-    },
-    "take off": {
-      example: "The plane takes off at 9 PM.",
-      meaning: "El avión despega a las 9 de la noche."
-    },
-    "turn on": {
-      example: "Please turn on the lights.",
-      meaning: "Por favor, enciende las luces."
-    },
-    "turn off": {
-      example: "Turn off the TV when you finish.",
-      meaning: "Apaga la televisión cuando termines."
-    },
-    "look for": {
-      example: "I'm looking for my keys.",
-      meaning: "Estoy buscando mis llaves."
-    },
-    "give up": {
-      example: "Don't give up on your dreams.",
-      meaning: "No te rindas con tus sueños."
-    },
-    "bring up": {
-      example: "She brought up an interesting topic.",
-      meaning: "Ella sacó un tema interesante."
-    },
-    "call off": {
-      example: "They called off the meeting.",
-      meaning: "Cancelaron la reunión."
-    },
-    "come back": {
-      example: "He will come back tomorrow.",
-      meaning: "Él volverá mañana."
-    },
-    "look after": {
-      example: "She looks after her younger brother.",
-      meaning: "Ella cuida a su hermano menor."
-    },
-    "make up": {
-      example: "They made up after the argument.",
-      meaning: "Se reconciliaron después de la discusión."
-    },
-    "run out": {
-      example: "We ran out of milk.",
-      meaning: "Nos quedamos sin leche."
-    },
-    "set up": {
-      example: "He set up a new company.",
-      meaning: "Él fundó una nueva empresa."
-    },
-    "pick up": {
-      example: "I will pick you up at the airport.",
-      meaning: "Te recogeré en el aeropuerto."
-    },
-    "break down": {
-      example: "The car broke down on the highway.",
-      meaning: "El auto se descompuso en la carretera."
-    },
-    "put off": {
-      example: "They put off the meeting until next week.",
-      meaning: "Pospusieron la reunión hasta la próxima semana."
-    },
-    "check out": {
-      example: "Check out this new restaurant.",
-      meaning: "Mira este nuevo restaurante."
-    },
-    "go on": {
-      example: "Please go on with your story.",
-      meaning: "Por favor, continúa con tu historia."
-    },
-    "fill out": {
-      example: "Please fill out this form.",
-      meaning: "Por favor, completa este formulario."
-    },
-    // 30 adicionales
-    "give in": {
-      example: "She finally gave in to their demands.",
-      meaning: "Finalmente cedió a sus demandas."
-    },
-    "hold on": {
-      example: "Hold on a minute, I'll be right back.",
-      meaning: "Espera un minuto, ya vuelvo."
-    },
-    "look up": {
-      example: "I need to look up that word in the dictionary.",
-      meaning: "Necesito buscar esa palabra en el diccionario."
-    },
-    "run into": {
-      example: "I ran into an old friend yesterday.",
-      meaning: "Me encontré con un viejo amigo ayer."
-    },
-    "take over": {
-      example: "The company was taken over by a larger firm.",
-      meaning: "La empresa fue tomada por una firma más grande."
-    },
-    "turn up": {
-      example: "He turned up late to the party.",
-      meaning: "Llegó tarde a la fiesta."
-    },
-    "turn down": {
-      example: "She turned down the job offer.",
-      meaning: "Rechazó la oferta de trabajo."
-    },
-    "work out": {
-      example: "Everything worked out well in the end.",
-      meaning: "Al final todo salió bien."
-    },
-    "bring back": {
-      example: "That song brings back memories.",
-      meaning: "Esa canción trae recuerdos."
-    },
-    "come across": {
-      example: "I came across an interesting article today.",
-      meaning: "Me topé con un artículo interesante hoy."
-    },
-    "cut down": {
-      example: "He cut down on sugar to lose weight.",
-      meaning: "Reducjo el azúcar para bajar de peso."
-    },
-    "get along": {
-      example: "They get along very well.",
-      meaning: "Se llevan muy bien."
-    },
-    "give away": {
-      example: "She gave away all her old clothes.",
-      meaning: "Regaló toda su ropa vieja."
-    },
-    "go back": {
-      example: "I want to go back home.",
-      meaning: "Quiero regresar a casa."
-    },
-    "hang out": {
-      example: "We like to hang out at the mall.",
-      meaning: "Nos gusta pasar el rato en el centro comercial."
-    },
-    "keep on": {
-      example: "Keep on trying, don't give up.",
-      meaning: "Sigue intentando, no te rindas."
-    },
-    "look out": {
-      example: "Look out! There's a car coming.",
-      meaning: "¡Cuidado! Viene un coche."
-    },
-    "move on": {
-      example: "It's time to move on from the past.",
-      meaning: "Es hora de seguir adelante del pasado."
-    },
-    "put up with": {
-      example: "I can't put up with the noise anymore.",
-      meaning: "Ya no puedo aguantar el ruido."
-    },
-    "set off": {
-      example: "We set off early in the morning.",
-      meaning: "Partimos temprano en la mañana."
-    },
-    "show up": {
-      example: "He didn't show up for the meeting.",
-      meaning: "No se presentó a la reunión."
-    },
-    "take back": {
-      example: "I take back what I said.",
-      meaning: "Retiro lo que dije."
-    },
-    "think over": {
-      example: "I'll think over your proposal.",
-      meaning: "Voy a pensar en tu propuesta."
-    },
-    "try on": {
-      example: "She tried on the dress before buying it.",
-      meaning: "Se probó el vestido antes de comprarlo."
-    },
-    "turn around": {
-      example: "The company turned around its losses.",
-      meaning: "La empresa revirtió sus pérdidas."
-    },
-    "wake up": {
-      example: "I wake up at 6 every day.",
-      meaning: "Me despierto a las 6 todos los días."
-    },
-    "watch out": {
-      example: "Watch out for the slippery floor.",
-      meaning: "Ten cuidado con el piso resbaladizo."
-    },
-    "write down": {
-      example: "Write down the address.",
-      meaning: "Anota la dirección."
-    },
-    "work on": {
-      example: "She's working on a new project.",
-      meaning: "Ella está trabajando en un nuevo proyecto."
-    }
-  };
-
-  function loadEnglishVoice() {
-    const voices = speechSynthesis.getVoices();
-    if (voices.length > 0) {
-      englishVoice = voices.find(v => v.lang === 'en-US' || v.lang.startsWith('en'));
-      voicesLoaded = true;
-    }
-  }
-
-  speechSynthesis.onvoiceschanged = () => {
-    loadEnglishVoice();
-  };
-
-  window.addEventListener('load', () => {
-    loadEnglishVoice();
-    const savedData = localStorage.getItem('savedSentences');
-    if (savedData) {
-      saved = JSON.parse(savedData);
-      renderSavedSentences();
-    }
-    updateSavedCount();
-  });
-
-  async function speakSentence(text, rate = 1) {
-    if (!('speechSynthesis' in window)) {
-      alert('Este navegador no soporta síntesis de voz.');
-      return;
-    }
-
-    loadEnglishVoice();
-    speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = rate;
-
-    if (englishVoice) {
-      utterance.voice = englishVoice;
-    }
-
-    speechSynthesis.speak(utterance);
-  }
-
-  // Para hablar phrasal verb + su ejemplo
-  function speakPhrasalVerbExample(pv) {
-    const data = phrasalVerbsData[pv];
-    if (!data) return;
-    const textToSpeak = `${pv}. Example: ${data.example}`;
-    speakSentence(textToSpeak, 1);
-  }
-
-  function detectPhrasalVerbs(text) {
-    const found = [];
-    const lowerText = text.toLowerCase();
-    for (const phrasal in phrasalVerbsData) {
-      if (lowerText.includes(phrasal)) {
-        found.push(phrasal);
-      }
-    }
-    return found;
-  }
-
-  function showPhrasalVerbsInfo(phrasals) {
-    const container = document.getElementById('phrasalVerbsInfo');
-    container.innerHTML = ''; // limpiar
-
-    if (phrasals.length === 0) return;
-
-    const title = document.createElement('h4');
-    title.textContent = 'Phrasal Verbs detectados:';
-    container.appendChild(title);
-
-    phrasals.forEach(pv => {
-      const data = phrasalVerbsData[pv];
-      if (!data) return;
-
-      const div = document.createElement('div');
-      div.className = 'phrasal-verb-item';
-
-      const textSpan = document.createElement('span');
-      textSpan.innerHTML = `<b>${pv}</b>: ${data.example} — <i>${data.meaning}</i>`;
-
-      const btnListen = document.createElement('button');
-      btnListen.textContent = 'Listen';
-      btnListen.className = 'listen-btn';
-      btnListen.onclick = () => speakPhrasalVerbExample(pv);
-
-      div.appendChild(textSpan);
-      div.appendChild(btnListen);
-      container.appendChild(div);
-    });
-  }
-
-  async function speakPhrasalVerbsAndSentence(sentence) {
-    const phrasals = detectPhrasalVerbs(sentence);
-    showPhrasalVerbsInfo(phrasals);
-
-    if (phrasals.length > 0) {
-      const phrasalsText = "Phrasal verbs found: " + phrasals.join(", ") + ".";
-      await new Promise(resolve => {
-        const utterance = new SpeechSynthesisUtterance(phrasalsText);
-        utterance.lang = 'en-US';
-        utterance.voice = englishVoice;
-        utterance.rate = 1;
-        utterance.onend = resolve;
-        speechSynthesis.speak(utterance);
+        div.innerHTML = `
+          <div class="phrasal">${item.verb}</div>
+          <div class="meaning">${item.meaning}</div>
+          <div class="example"><em>${item.example}</em></div>
+          <button onclick="listenPhrasal('${item.verb}', '${item.example}')">Listen</button>
+        `;
+        container.appendChild(div);
       });
     }
-    speakSentence(sentence, 1);
-  }
 
-  function testSpeak() {
-    speakSentence("Testing phrasal verbs like get up, put on, and take off.", 1);
-  }
-
-  function startTraining() {
-    const lyrics = document.getElementById('lyrics').value.trim();
-    if (!lyrics) {
-      alert('Por favor pega la letra antes de iniciar.');
-      return;
+    function listenPhrasal(verb, example) {
+      const text = `${verb}. ${example}`;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      speechSynthesis.speak(utterance);
     }
-    sentences = lyrics.split(/\n+/).map(s => s.trim()).filter(s => s.length > 0);
-    if (!sentences || sentences.length === 0) {
-      alert('No se detectaron oraciones válidas.');
-      return;
-    }
-    current = 0;
-    document.getElementById('output').innerHTML = '';
-    document.getElementById('userInput').value = '';
-    document.getElementById('userInput').disabled = false;
-    document.getElementById('saveBtn').disabled = true;
-    document.getElementById('userInput').focus();
-    updateCounter();
 
-    speakPhrasalVerbsAndSentence(sentences[current]);
-  }
+    renderPhrasals();
+  </script>
 
-  function normalizeSentence(str) {
-    str = str.toLowerCase();
-    str = str.replace(/[^a-z'\s]/g, '');
-    str = str.replace(/(^|[^a-z])'+|'+([^a-z]|$)/g, '$1$2');
-    str = str.replace(/\s+/g, ' ').trim();
-    return str;
-  }
-
-  function updateCounter() {
-    const counter = document.getElementById('sentenceCounter');
-    if (current < sentences.length) {
-      counter.textContent = `Oración a escribir: ${current + 1} de ${sentences.length}`;
-    } else {
-      counter.textContent = '¡Has completado todas las oraciones! 🎉';
-      document.getElementById('saveBtn').disabled = true;
-      document.getElementById('userInput').disabled = true;
-      document.getElementById('phrasalVerbsInfo').innerHTML = '';
-    }
-  }
-
-  function checkSentence() {
-    if (current >= sentences.length) return;
-    const input = normalizeSentence(document.getElementById('userInput').value);
-    const target = normalizeSentence(sentences[current]);
-    const output = document.getElementById('output');
-    const saveBtn = document.getElementById('saveBtn');
-
-    if (input === target) {
-      output.textContent = '✅ Correcto!';
-      saveBtn.disabled = false;
-    } else {
-      output.textContent = '';
-      saveBtn.disabled = true;
-    }
-  }
-
-  function saveSentence() {
-    if (current >= sentences.length) return;
-    const sentence = sentences[current];
-    if (!saved.includes(sentence)) {
-      saved.push(sentence);
-      localStorage.setItem('savedSentences', JSON.stringify(saved));
-      renderSavedSentences();
-      updateSavedCount();
-    }
-    document.getElementById('saveBtn').disabled = true;
-    nextSentence();
-  }
-
-  function nextSentence() {
-    current++;
-    if (current < sentences.length) {
-      document.getElementById('userInput').value = '';
-      document.getElementById('output').textContent = '';
-      updateCounter();
-      speakPhrasalVerbsAndSentence(sentences[current]);
-    } else {
-      updateCounter();
-      alert('¡Has completado todas las oraciones!');
-      document.getElementById('userInput').disabled = true;
-      document.getElementById('phrasalVerbsInfo').innerHTML = '';
-    }
-  }
-
-  function skipSentence() {
-    if (current < sentences.length - 1) {
-      current++;
-      document.getElementById('userInput').value = '';
-      document.getElementById('output').textContent = '';
-      updateCounter();
-      speakPhrasalVerbsAndSentence(sentences[current]);
-    }
-  }
-
-  function revealSentence() {
-    if (current < sentences.length) {
-      alert('Oración: ' + sentences[current]);
-    }
-  }
-
-  function repeatSentenceNormal() {
-    if (current < sentences.length) {
-      speakSentence(sentences[current], 1);
-    }
-  }
-
-  function repeatSentenceSlow() {
-    if (current < sentences.length) {
-      speakSentence(sentences[current], 0.7);
-    }
-  }
-
-  function repeatSentenceVerySlow() {
-    if (current < sentences.length) {
-      speakSentence(sentences[current], 0.4);
-    }
-  }
-
-  function renderSavedSentences() {
-    const ul = document.getElementById('savedSentences');
-    ul.innerHTML = '';
-    saved.forEach((s, i) => {
-      const li = document.createElement('li');
-      li.textContent = s;
-      ul.appendChild(li);
-    });
-  }
-
-  function updateSavedCount() {
-    document.getElementById('savedCount').textContent = `Oraciones guardadas: ${saved.length}`;
-  }
-
-  function downloadSentences() {
-    if (saved.length === 0) {
-      alert('No hay oraciones guardadas para descargar.');
-      return;
-    }
-    const blob = new Blob([saved.join('\n')], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'oraciones_guardadas.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  function openPractice() {
-    if (saved.length === 0) {
-      alert('No tienes oraciones guardadas para practicar.');
-      return;
-    }
-    let practiceText = 'Oraciones guardadas para practicar:\n\n';
-    practiceText += saved.join('\n');
-    alert(practiceText);
-  }
-</script>
 </body>
 </html>
